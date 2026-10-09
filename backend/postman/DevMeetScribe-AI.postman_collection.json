@@ -1,0 +1,323 @@
+{
+  "info": {
+    "name": "DevMeetScribe AI - Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "2. Create meeting",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Sprint sync\",\n  \"transcript\": \"Rahul: Good morning everyone. Let's go over the sprint status. Priya: The registration module is done, but we still have two open bugs in the login flow. Rahul: We need to finish the student login API by Friday. Priya, can you also test the registration endpoint? Priya: Sure, I'll test the registration endpoint by Thursday. Amit: For the database, we decided to go with PostgreSQL instead of MySQL. We still need to discuss the migration plan. Rahul: Agreed. Someone should also update the API documentation before the demo. Rahul: Okay, the next release is on the 20th. Let's wrap up.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('201 Created', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('meetingId', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Analyze meeting (calls Ollama)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings/{{meetingId}}/analyze",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings",
+            "{{meetingId}}",
+            "analyze"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('200 OK', () => pm.response.to.have.status(200));",
+              "const t = pm.response.json().tasks;",
+              "if (t && t.length) { pm.collectionVariables.set('taskId', t[0].id); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Get meeting",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings/{{meetingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings",
+            "{{meetingId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. List meetings",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. List tasks of meeting",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings/{{meetingId}}/tasks",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings",
+            "{{meetingId}}",
+            "tasks"
+          ]
+        }
+      }
+    },
+    {
+      "name": "7. Add task manually",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings/{{meetingId}}/tasks",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings",
+            "{{meetingId}}",
+            "tasks"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Update API documentation\",\n  \"assignee\": \"Amit\",\n  \"deadline\": \"Before the demo\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "8. Update task (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            "{{taskId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"IN_PROGRESS\",\n  \"assignee\": \"Priya\",\n  \"deadline\": \"Friday\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "9. List pending tasks (all meetings)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks?status=PENDING",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "tasks"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "PENDING"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "10. Delete task",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            "{{taskId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "11. Delete meeting",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings/{{meetingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings",
+            "{{meetingId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Validation error demo (blank title)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"\",\n  \"transcript\": \"x\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "meetingId",
+      "value": "1"
+    },
+    {
+      "key": "taskId",
+      "value": "1"
+    }
+  ]
+}
