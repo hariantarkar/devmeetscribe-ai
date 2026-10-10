@@ -1,0 +1,46 @@
+@import "@fontsource-variable/schibsted-grotesk";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink-950: #0e1014;
+  --color-ink-900: #14171d;
+  --color-ink-850: #191d25;
+  --color-ink-800: #1f242d;
+  --color-ink-700: #2a303b;
+  --color-ink-500: #838c9c;
+  --color-ink-300: #a7aebb;
+  --color-ink-100: #e9ecf1;
+
+  --color-nav-900: #0b1020;
+  --color-nav-800: #151b30;
+
+  --color-accent-300: #b3a8ff;
+  --color-accent-400: #9a8cf8;
+  --color-accent-500: #8574ee;
+  --color-accent-600: #7561e6;
+
+  --color-ok: #5cc48e;
+  --color-warn: #e6b455;
+  --color-bad: #ee7b7b;
+}
+
+html, body, #root { height: 100%; }
+
+body {
+  background: var(--color-ink-950);
+  color: var(--color-ink-100);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-400);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection { background: color-mix(in srgb, var(--color-accent-500) 45%, transparent); }
+
+.scroll-thin { scrollbar-width: thin; scrollbar-color: var(--color-ink-700) transparent; }
