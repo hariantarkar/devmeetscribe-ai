@@ -34,14 +34,19 @@ public class OllamaClient {
 
     /** Sends a system + user message and returns the raw text of the reply (JSON mode). */
     public String chatJson(String systemPrompt, String userPrompt) {
+        return chatJson(List.of(
+                Map.of("role", "system", "content", systemPrompt),
+                Map.of("role", "user", "content", userPrompt)));
+    }
+
+    /** Sends a full message list (roles: system, user, assistant) and returns the raw reply (JSON mode). */
+    public String chatJson(List<Map<String, String>> messages) {
         Map<String, Object> body = Map.of(
                 "model", model,
                 "stream", false,
                 "format", "json",
                 "options", Map.of("temperature", 0.2, "num_ctx", numCtx),
-                "messages", List.of(
-                        Map.of("role", "system", "content", systemPrompt),
-                        Map.of("role", "user", "content", userPrompt)));
+                "messages", messages);
         try {
             JsonNode response = restClient.post()
                     .uri("/api/chat")

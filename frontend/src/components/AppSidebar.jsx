@@ -9,7 +9,7 @@ export const SECTIONS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'meetings', label: 'Meetings', icon: CalendarDays },
   { id: 'tasks', label: 'Tasks', icon: ListChecks },
-  { id: 'chat', label: 'Chat', icon: MessagesSquare, soon: true },
+  { id: 'chat', label: 'Chat', icon: MessagesSquare },
 ]
 
 export default function AppSidebar({ section, onSelect, collapsed, onToggleCollapsed, mobileOpen, onCloseMobile }) {
@@ -29,7 +29,7 @@ export default function AppSidebar({ section, onSelect, collapsed, onToggleColla
 
       <aside
         id="app-nav"
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col gap-6 bg-nav-900 p-4 transition-[transform,width] duration-200 motion-reduce:transition-none lg:static lg:z-auto lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col gap-6 bg-nav-900 p-4 transition-[transform,width] duration-200 motion-reduce:transition-none lg:static lg:z-auto lg:translate-x-0 lg:border-r lg:border-ink-800 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         } ${collapsed ? 'lg:w-[4.75rem]' : 'lg:w-64'}`}
       >

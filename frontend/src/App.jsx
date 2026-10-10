@@ -195,7 +195,7 @@ export default function App() {
         onCloseMobile={() => setMobileNav(false)}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="theme-light flex min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-3 border-b border-ink-800 bg-ink-900 px-4 py-3 lg:hidden">
           <button
             type="button"
@@ -237,9 +237,16 @@ export default function App() {
             />
           )}
           {section === 'tasks' && <TasksPage meetings={meetings} onOpenMeeting={openMeeting} onError={notify} />}
-          {section === 'chat' && <ChatPage onGoMeetings={() => selectSection('meetings')} />}
+          {section === 'chat' && (
+            <ChatPage
+              meetings={meetings}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onError={notify}
+              onGoMeetings={() => selectSection('meetings')}
+            />
+          )}
         </main>
-      </div>
 
       {showNew && <NewMeetingModal onClose={() => setShowNew(false)} onCreate={createMeeting} />}
 
@@ -264,6 +271,8 @@ export default function App() {
           </div>
         ))}
       </div>
+      </div>
+
     </div>
   )
 }

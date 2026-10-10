@@ -4,22 +4,22 @@
 @theme {
   --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink-950: #0e1014;
-  --color-ink-900: #14171d;
-  --color-ink-850: #191d25;
-  --color-ink-800: #1f242d;
-  --color-ink-700: #2a303b;
+  --color-ink-950: #0f1420;
+  --color-ink-900: #151b2a;
+  --color-ink-850: #1a2132;
+  --color-ink-800: #20293c;
+  --color-ink-700: #2d384e;
   --color-ink-500: #838c9c;
   --color-ink-300: #a7aebb;
   --color-ink-100: #e9ecf1;
 
-  --color-nav-900: #0b1020;
-  --color-nav-800: #151b30;
+  --color-nav-900: #080c18;
+  --color-nav-800: #141b30;
 
-  --color-accent-300: #b3a8ff;
-  --color-accent-400: #9a8cf8;
-  --color-accent-500: #8574ee;
-  --color-accent-600: #7561e6;
+  --color-accent-300: #8fb2ff;
+  --color-accent-400: #6b96f5;
+  --color-accent-500: #3568df;
+  --color-accent-600: #2757d1;
 
   --color-ok: #5cc48e;
   --color-warn: #e6b455;
@@ -44,3 +44,26 @@ body {
 ::selection { background: color-mix(in srgb, var(--color-accent-500) 45%, transparent); }
 
 .scroll-thin { scrollbar-width: thin; scrollbar-color: var(--color-ink-700) transparent; }
+
+/* Light page area (white to beach sand). Re-maps the same tokens, so every component adapts.
+   Applied to the right-hand wrapper in App.jsx; the sidebar keeps the dark navy theme. */
+.theme-light {
+  --color-ink-950: #fffdf9;
+  --color-ink-900: #ffffff;
+  --color-ink-850: #f7f0e3;
+  --color-ink-800: #efe5d3;
+  --color-ink-700: #b8a785;
+  --color-ink-500: #6b604d;
+  --color-ink-300: #4b4436;
+  --color-ink-100: #1c1912;
+
+  --color-accent-300: #1f4fc0;
+  --color-accent-400: #3568df;
+
+  --color-ok: #1b7f4b;
+  --color-warn: #94600a;
+  --color-bad: #c0392b;
+
+  background-image: linear-gradient(160deg, #ffffff 0%, #fdf9f1 40%, #f5e9d4 100%);
+  color: var(--color-ink-100);
+}
