@@ -38,6 +38,12 @@ export const api = {
   askMeeting: (id, question) => request(`/api/meetings/${id}/chat`, json('POST', { question })),
   clearChat: (id) => request(`/api/meetings/${id}/chat`, { method: 'DELETE' }),
   draftEmail: (id, tone) => request(`/api/meetings/${id}/email`, json('POST', { tone })),
+  transcribe: (wavBlob) => {
+    const form = new FormData()
+    form.append('file', wavBlob, 'audio.wav')
+    // No JSON header here: the browser sets the multipart boundary itself.
+    return request('/api/transcribe', { method: 'POST', body: form, headers: {} })
+  },
   addTask: (meetingId, data) => request(`/api/meetings/${meetingId}/tasks`, json('POST', data)),
   updateTask: (id, data) => request(`/api/tasks/${id}`, json('PATCH', data)),
   deleteTask: (id) => request(`/api/tasks/${id}`, { method: 'DELETE' }),
