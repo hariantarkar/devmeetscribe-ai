@@ -3,6 +3,7 @@ import { Menu, X } from 'lucide-react'
 import { api } from './api'
 import AppSidebar, { SECTIONS } from './components/AppSidebar'
 import NewMeetingModal from './components/NewMeetingModal'
+import ShareModal from './components/ShareModal'
 import OverviewPage from './pages/OverviewPage'
 import MeetingsPage from './pages/MeetingsPage'
 import TasksPage from './pages/TasksPage'
@@ -32,6 +33,7 @@ export default function App() {
   const [detail, setDetail] = useState(null)
   const [analyzingId, setAnalyzingId] = useState(null)
   const [showNew, setShowNew] = useState(false)
+  const [showShare, setShowShare] = useState(false)
   const [toasts, setToasts] = useState([])
 
   const selectedRef = useRef(null)
@@ -231,6 +233,7 @@ export default function App() {
               onNew={() => setShowNew(true)}
               onAnalyze={analyze}
               onDelete={deleteMeeting}
+              onShare={() => setShowShare(true)}
               onAddTask={addTask}
               onUpdateTask={updateTask}
               onDeleteTask={deleteTask}
@@ -249,6 +252,7 @@ export default function App() {
         </main>
 
       {showNew && <NewMeetingModal onClose={() => setShowNew(false)} onCreate={createMeeting} />}
+        {showShare && detail && <ShareModal meeting={detail} onClose={() => setShowShare(false)} onError={notify} />}
 
       <div className="fixed bottom-4 right-4 z-50 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-2" aria-live="polite">
         {toasts.map((t) => (

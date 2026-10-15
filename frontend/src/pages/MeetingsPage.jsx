@@ -4,7 +4,7 @@ import TaskPanel from '../components/TaskPanel'
 
 export default function MeetingsPage({
   meetings, loading, selectedId, detail, analyzingId,
-  onSelect, onNew, onAnalyze, onDelete, onAddTask, onUpdateTask, onDeleteTask,
+  onSelect, onNew, onAnalyze, onDelete, onShare, onAddTask, onUpdateTask, onDeleteTask,
 }) {
   return (
     <div className="grid grid-cols-1 lg:h-full lg:grid-cols-[17rem_minmax(0,1fr)] lg:grid-rows-1 xl:grid-cols-[17rem_minmax(0,1fr)_21rem]">
@@ -25,6 +25,7 @@ export default function MeetingsPage({
             analyzing={analyzingId === detail.id}
             onAnalyze={() => onAnalyze(detail.id)}
             onDelete={onDelete}
+            onShare={onShare}
           />
           <TaskPanel meeting={detail} onAddTask={onAddTask} onUpdateTask={onUpdateTask} onDeleteTask={onDeleteTask} />
         </div>

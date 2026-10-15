@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FileText, Loader2, Sparkles, Trash2 } from 'lucide-react'
+import { FileText, Loader2, Share2, Sparkles, Trash2 } from 'lucide-react'
 import { formatDate } from '../api'
 
 function Tab({ active, onClick, children }) {
@@ -18,7 +18,7 @@ function Tab({ active, onClick, children }) {
   )
 }
 
-export default function MeetingView({ meeting, analyzing, onAnalyze, onDelete }) {
+export default function MeetingView({ meeting, analyzing, onAnalyze, onDelete, onShare }) {
   const [tab, setTab] = useState('summary')
   const analyzed = meeting.status === 'ANALYZED'
 
@@ -42,6 +42,16 @@ export default function MeetingView({ meeting, analyzing, onAnalyze, onDelete })
               <Sparkles className="size-4" aria-hidden="true" />
             )}
             {analyzing ? 'Analyzing' : analyzed ? 'Analyze again' : 'Analyze meeting'}
+          </button>
+          <button
+            type="button"
+            onClick={onShare}
+            disabled={!analyzed}
+            title={analyzed ? 'Email and export' : 'Analyze the meeting first'}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-ink-700 px-3.5 py-2 text-sm hover:bg-ink-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Share2 className="size-4" aria-hidden="true" />
+            Share
           </button>
           <button
             type="button"

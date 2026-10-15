@@ -16,15 +16,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "meetings")
-@Getter
-@Setter
-@NoArgsConstructor
 public class Meeting {
 
     @Id
@@ -55,8 +49,35 @@ public class Meeting {
     @OrderBy("id ASC")
     private List<Decision> decisions = new ArrayList<>();
 
+    public Meeting() {
+    }
+
     @PrePersist
     void onCreate() {
         this.createdAt = Instant.now();
     }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getTranscript() { return transcript; }
+    public void setTranscript(String transcript) { this.transcript = transcript; }
+
+    public String getSummary() { return summary; }
+    public void setSummary(String summary) { this.summary = summary; }
+
+    public MeetingStatus getStatus() { return status; }
+    public void setStatus(MeetingStatus status) { this.status = status; }
+
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    public List<Task> getTasks() { return tasks; }
+    public void setTasks(List<Task> tasks) { this.tasks = tasks; }
+
+    public List<Decision> getDecisions() { return decisions; }
+    public void setDecisions(List<Decision> decisions) { this.decisions = decisions; }
 }

@@ -9,15 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "decisions")
-@Getter
-@Setter
-@NoArgsConstructor
 public class Decision {
 
     @Id
@@ -30,4 +24,16 @@ public class Decision {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
+
+    public Decision() {
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Meeting getMeeting() { return meeting; }
+    public void setMeeting(Meeting meeting) { this.meeting = meeting; }
+
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
 }

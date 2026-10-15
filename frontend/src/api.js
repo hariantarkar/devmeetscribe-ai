@@ -37,6 +37,7 @@ export const api = {
   chatHistory: (id) => request(`/api/meetings/${id}/chat`),
   askMeeting: (id, question) => request(`/api/meetings/${id}/chat`, json('POST', { question })),
   clearChat: (id) => request(`/api/meetings/${id}/chat`, { method: 'DELETE' }),
+  draftEmail: (id, tone) => request(`/api/meetings/${id}/email`, json('POST', { tone })),
   addTask: (meetingId, data) => request(`/api/meetings/${meetingId}/tasks`, json('POST', data)),
   updateTask: (id, data) => request(`/api/tasks/${id}`, json('PATCH', data)),
   deleteTask: (id) => request(`/api/tasks/${id}`, { method: 'DELETE' }),
