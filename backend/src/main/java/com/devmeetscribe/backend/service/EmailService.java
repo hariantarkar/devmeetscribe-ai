@@ -19,6 +19,7 @@ import com.devmeetscribe.backend.exception.NotFoundException;
 import com.devmeetscribe.backend.llm.EmailParser;
 import com.devmeetscribe.backend.llm.OllamaClient;
 import com.devmeetscribe.backend.repository.MeetingRepository;
+import com.devmeetscribe.backend.security.CurrentUser;
 
 /** Writes a follow-up email draft from an analyzed meeting. Nothing is stored or sent. */
 @Service
@@ -67,7 +68,7 @@ public class EmailService {
         String tone = TONES.getOrDefault(key, TONES.get("professional"));
 
         Context context = tx.execute(status -> {
-            Meeting meeting = meetingRepository.findById(meetingId)
+            Meeting meeting = meetingRepository.findByIdAndOwnerId(meetingId, CurrentUser.id())
                     .orElseThrow(() -> new NotFoundException("Meeting not found: " + meetingId));
             if (meeting.getStatus() != MeetingStatus.ANALYZED) {
                 throw new BadRequestException(

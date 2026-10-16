@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import { api } from './api'
+import { api, setUnauthorizedHandler } from './api'
+import { clearToken, getToken } from './auth'
 import AppSidebar, { SECTIONS } from './components/AppSidebar'
 import NewMeetingModal from './components/NewMeetingModal'
 import ShareModal from './components/ShareModal'
@@ -8,6 +9,7 @@ import OverviewPage from './pages/OverviewPage'
 import MeetingsPage from './pages/MeetingsPage'
 import TasksPage from './pages/TasksPage'
 import ChatPage from './pages/ChatPage'
+import AuthPage from './pages/AuthPage'
 
 function initialSection() {
   const hash = window.location.hash.slice(1)
@@ -22,7 +24,7 @@ function initialCollapsed() {
   }
 }
 
-export default function App() {
+function Workspace({ user, onLogout }) {
   const [section, setSection] = useState(initialSection)
   const [collapsed, setCollapsed] = useState(initialCollapsed)
   const [mobileNav, setMobileNav] = useState(false)
@@ -189,6 +191,8 @@ export default function App() {
   return (
     <div className="flex h-dvh overflow-hidden">
       <AppSidebar
+        user={user}
+        onLogout={onLogout}
         section={section}
         onSelect={selectSection}
         collapsed={collapsed}
@@ -278,5 +282,40 @@ export default function App() {
       </div>
 
     </div>
+  )
+}
+
+export default function App() {
+  const [user, setUser] = useState(null)
+  const [checking, setChecking] = useState(() => Boolean(getToken()))
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => setUser(null))
+    if (!getToken()) return
+    api
+      .me()
+      .then(setUser)
+      .catch(() => clearToken())
+      .finally(() => setChecking(false))
+  }, [])
+
+  if (checking) {
+    return (
+      <div className="theme-light grid min-h-dvh place-items-center">
+        <p className="text-sm text-ink-300" role="status">Loading</p>
+      </div>
+    )
+  }
+  if (!user) return <AuthPage onAuthed={setUser} />
+
+  return (
+    <Workspace
+      key={user.id}
+      user={user}
+      onLogout={() => {
+        clearToken()
+        setUser(null)
+      }}
+    />
   )
 }

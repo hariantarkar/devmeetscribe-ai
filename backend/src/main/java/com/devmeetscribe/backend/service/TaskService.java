@@ -14,6 +14,7 @@ import com.devmeetscribe.backend.entity.TaskStatus;
 import com.devmeetscribe.backend.exception.NotFoundException;
 import com.devmeetscribe.backend.repository.MeetingRepository;
 import com.devmeetscribe.backend.repository.TaskRepository;
+import com.devmeetscribe.backend.security.CurrentUser;
 import com.devmeetscribe.backend.util.TextUtils;
 
 @Service
@@ -29,7 +30,7 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public List<TaskResponse> listByMeeting(Long meetingId) {
-        if (!meetingRepository.existsById(meetingId)) {
+        if (!meetingRepository.existsByIdAndOwnerId(meetingId, CurrentUser.id())) {
             throw new NotFoundException("Meeting not found: " + meetingId);
         }
         return taskRepository.findByMeetingIdOrderByIdAsc(meetingId).stream()
@@ -40,14 +41,14 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskResponse> listAll(TaskStatus status) {
         List<Task> tasks = (status == null)
-                ? taskRepository.findAllByOrderByIdDesc()
-                : taskRepository.findByStatusOrderByIdDesc(status);
+                ? taskRepository.findByMeetingOwnerIdOrderByIdDesc(CurrentUser.id())
+                : taskRepository.findByMeetingOwnerIdAndStatusOrderByIdDesc(CurrentUser.id(), status);
         return tasks.stream().map(MeetingMapper::toTaskResponse).toList();
     }
 
     @Transactional
     public TaskResponse add(Long meetingId, CreateTaskRequest request) {
-        Meeting meeting = meetingRepository.findById(meetingId)
+        Meeting meeting = meetingRepository.findByIdAndOwnerId(meetingId, CurrentUser.id())
                 .orElseThrow(() -> new NotFoundException("Meeting not found: " + meetingId));
         Task task = new Task();
         task.setMeeting(meeting);
@@ -81,7 +82,7 @@ public class TaskService {
     }
 
     private Task find(Long id) {
-        return taskRepository.findById(id)
+        return taskRepository.findByIdAndMeetingOwnerId(id, CurrentUser.id())
                 .orElseThrow(() -> new NotFoundException("Task not found: " + id));
     }
 }

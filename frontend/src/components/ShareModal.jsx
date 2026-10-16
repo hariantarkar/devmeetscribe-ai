@@ -11,6 +11,8 @@ const TONES = [
 
 // Most mail apps cut off mailto links after about 2,000 characters.
 const MAILTO_LIMIT = 1900
+// Gmail and Outlook on the web accept much longer links.
+const WEB_LINK_LIMIT = 7000
 
 function Tab({ active, onClick, children }) {
   return (
@@ -78,8 +80,12 @@ export default function ShareModal({ meeting, onClose, onError }) {
     }
   }
 
-  const mailto = draft
-    ? `mailto:?subject=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`
+  const subjectQuery = draft ? encodeURIComponent(draft.subject) : ''
+  const bodyQuery = draft ? encodeURIComponent(draft.body) : ''
+  const mailto = draft ? `mailto:?subject=${subjectQuery}&body=${bodyQuery}` : ''
+  const gmail = draft ? `https://mail.google.com/mail/?view=cm&fs=1&su=${subjectQuery}&body=${bodyQuery}` : ''
+  const outlook = draft
+    ? `https://outlook.live.com/mail/0/deeplink/compose?subject=${subjectQuery}&body=${bodyQuery}`
     : ''
   const report = reportText(meeting, { includeTranscript })
 
@@ -174,18 +180,43 @@ export default function ShareModal({ meeting, onClose, onError }) {
                   <CopyButton done={copied === 'email'} onClick={() => copy(`Subject: ${draft.subject}\n\n${draft.body}`, 'email')}>
                     Copy email
                   </CopyButton>
-                  {mailto.length <= MAILTO_LIMIT ? (
+                  {gmail.length <= WEB_LINK_LIMIT ? (
+                    <>
+                      <a
+                        href={gmail}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-ink-700 px-3.5 py-2 text-sm hover:bg-ink-800"
+                      >
+                        <Mail className="size-4" aria-hidden="true" />
+                        Open in Gmail
+                      </a>
+                      <a
+                        href={outlook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-ink-700 px-3.5 py-2 text-sm hover:bg-ink-800"
+                      >
+                        <Mail className="size-4" aria-hidden="true" />
+                        Open in Outlook
+                      </a>
+                    </>
+                  ) : (
+                    <span className="text-sm text-ink-500">Too long for an email link. Use Copy email.</span>
+                  )}
+                  {mailto.length <= MAILTO_LIMIT && (
                     <a
                       href={mailto}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-ink-700 px-3.5 py-2 text-sm hover:bg-ink-800"
                     >
                       <Mail className="size-4" aria-hidden="true" />
-                      Open in email app
+                      Email app
                     </a>
-                  ) : (
-                    <span className="text-sm text-ink-500">Too long for an email link. Use Copy email.</span>
                   )}
                 </div>
+                <p className="text-xs text-ink-500">
+                  Gmail and Outlook open a ready-to-send draft in a new tab. &ldquo;Email app&rdquo; only works if a default mail app is set in Windows.
+                </p>
               </>
             )}
           </div>

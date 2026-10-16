@@ -26,6 +26,7 @@ import com.devmeetscribe.backend.llm.OllamaClient;
 import com.devmeetscribe.backend.llm.TranscriptSegmenter;
 import com.devmeetscribe.backend.repository.ChatMessageRepository;
 import com.devmeetscribe.backend.repository.MeetingRepository;
+import com.devmeetscribe.backend.security.CurrentUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -195,7 +196,7 @@ public class ChatService {
     }
 
     private Meeting requireMeeting(Long id) {
-        return meetingRepository.findById(id)
+        return meetingRepository.findByIdAndOwnerId(id, CurrentUser.id())
                 .orElseThrow(() -> new NotFoundException("Meeting not found: " + id));
     }
 

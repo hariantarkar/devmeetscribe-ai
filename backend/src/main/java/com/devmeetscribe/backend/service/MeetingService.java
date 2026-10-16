@@ -18,12 +18,15 @@ import com.devmeetscribe.backend.entity.Task;
 import com.devmeetscribe.backend.exception.BadRequestException;
 import com.devmeetscribe.backend.exception.NotFoundException;
 import com.devmeetscribe.backend.repository.MeetingRepository;
+import com.devmeetscribe.backend.repository.UserRepository;
+import com.devmeetscribe.backend.security.CurrentUser;
 import com.devmeetscribe.backend.util.TextUtils;
 
 @Service
 public class MeetingService {
 
     private final MeetingRepository meetingRepository;
+    private final UserRepository userRepository;
     private final MeetingAnalysisService analysisService;
     private final TransactionTemplate tx;
 
@@ -31,9 +34,11 @@ public class MeetingService {
     private int maxTranscriptChars;
 
     public MeetingService(MeetingRepository meetingRepository,
+                          UserRepository userRepository,
                           MeetingAnalysisService analysisService,
                           TransactionTemplate tx) {
         this.meetingRepository = meetingRepository;
+        this.userRepository = userRepository;
         this.analysisService = analysisService;
         this.tx = tx;
     }
@@ -45,6 +50,7 @@ public class MeetingService {
                     + " characters for now). Long-transcript chunking is on the roadmap.");
         }
         Meeting meeting = new Meeting();
+        meeting.setOwner(userRepository.getReferenceById(CurrentUser.id()));
         meeting.setTitle(request.title().trim());
         meeting.setTranscript(request.transcript().trim());
         return MeetingMapper.toDetail(meetingRepository.save(meeting));
@@ -52,7 +58,7 @@ public class MeetingService {
 
     @Transactional(readOnly = true)
     public List<MeetingListItem> list() {
-        return meetingRepository.findAllByOrderByCreatedAtDesc().stream()
+        return meetingRepository.findAllByOwnerIdOrderByCreatedAtDesc(CurrentUser.id()).stream()
                 .map(MeetingMapper::toListItem)
                 .toList();
     }
@@ -120,7 +126,7 @@ public class MeetingService {
     }
 
     private Meeting find(Long id) {
-        return meetingRepository.findById(id)
+        return meetingRepository.findByIdAndOwnerId(id, CurrentUser.id())
                 .orElseThrow(() -> new NotFoundException("Meeting not found: " + id));
     }
 }

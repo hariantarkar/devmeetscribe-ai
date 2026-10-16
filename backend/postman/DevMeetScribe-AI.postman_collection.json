@@ -3,7 +3,129 @@
     "name": "DevMeetScribe AI - Backend",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
   "item": [
+    {
+      "name": "0a. Register (first time only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        },
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"demo@example.com\",\n  \"password\": \"demo12345\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('token returned', () => pm.expect(pm.response.json().token).to.be.a('string'));",
+              "pm.collectionVariables.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "0b. Login (sets the token)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"demo@example.com\",\n  \"password\": \"demo12345\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('token returned', () => pm.expect(pm.response.json().token).to.be.a('string'));",
+              "pm.collectionVariables.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "0c. Who am I",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      }
+    },
     {
       "name": "1. Health check",
       "request": {
@@ -18,6 +140,9 @@
             "api",
             "health"
           ]
+        },
+        "auth": {
+          "type": "noauth"
         }
       }
     },
@@ -43,7 +168,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Sprint sync\",\n  \"transcript\": \"Rahul: Good morning everyone. Let's go over the sprint status. Priya: The registration module is done, but we still have two open bugs in the login flow. Rahul: We need to finish the student login API by Friday. Priya, can you also test the registration endpoint? Priya: Sure, I'll test the registration endpoint by Thursday. Amit: For the database, we decided to go with PostgreSQL instead of MySQL. We still need to discuss the migration plan. Rahul: Agreed. Someone should also update the API documentation before the demo. Rahul: Okay, the next release is on the 20th. Let's wrap up.\"\n}",
+          "raw": "{\n  \"title\": \"Sprint sync\",\n  \"transcript\": \"Rahul: Good morning everyone. Let's go over the sprint status. Priya: The registration module is done, but we still have two open bugs in the login flow. Rahul: We need to finish the student login API by Friday. Priya, can you also test the registration endpoint? Priya: Sure, I'll test the registration endpoint by Thursday. Amit: For the database, we decided to go with MySQL instead of PostgreSQL. We still need to discuss the migration plan. Rahul: Agreed. Someone should also update the API documentation before the demo.\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -115,7 +240,7 @@
       }
     },
     {
-      "name": "5. List meetings",
+      "name": "5. List my meetings",
       "request": {
         "method": "GET",
         "header": [],
@@ -216,7 +341,7 @@
       }
     },
     {
-      "name": "9. List pending tasks (all meetings)",
+      "name": "9. List my pending tasks",
       "request": {
         "method": "GET",
         "header": [],
@@ -239,7 +364,92 @@
       }
     },
     {
-      "name": "10. Delete task",
+      "name": "10. Chat: ask a question",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings/{{meetingId}}/chat",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings",
+            "{{meetingId}}",
+            "chat"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"What did we decide about the database?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "11. Chat: history",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings/{{meetingId}}/chat",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings",
+            "{{meetingId}}",
+            "chat"
+          ]
+        }
+      }
+    },
+    {
+      "name": "12. Draft follow-up email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings/{{meetingId}}/email",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings",
+            "{{meetingId}}",
+            "email"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tone\": \"professional\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "13. Delete task",
       "request": {
         "method": "DELETE",
         "header": [],
@@ -257,7 +467,7 @@
       }
     },
     {
-      "name": "11. Delete meeting",
+      "name": "14. Delete meeting",
       "request": {
         "method": "DELETE",
         "header": [],
@@ -271,6 +481,26 @@
             "meetings",
             "{{meetingId}}"
           ]
+        }
+      }
+    },
+    {
+      "name": "Unauthorized demo (no token)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/meetings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "meetings"
+          ]
+        },
+        "auth": {
+          "type": "noauth"
         }
       }
     },
@@ -310,6 +540,10 @@
     {
       "key": "baseUrl",
       "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
     },
     {
       "key": "meetingId",

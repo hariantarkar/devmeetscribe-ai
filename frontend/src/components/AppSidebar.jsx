@@ -1,9 +1,6 @@
 import { useEffect } from 'react'
-import { CalendarDays, LayoutDashboard, ListChecks, Menu, MessagesSquare, X } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, ListChecks, LogOut, Menu, MessagesSquare, X } from 'lucide-react'
 import HealthBadge from './HealthBadge'
-
-// Shown in the profile card. Replace with the logged-in user once auth exists.
-const USER = { name: 'Hari Antarkar', note: 'Local mode' }
 
 export const SECTIONS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -12,7 +9,7 @@ export const SECTIONS = [
   { id: 'chat', label: 'Chat', icon: MessagesSquare },
 ]
 
-export default function AppSidebar({ section, onSelect, collapsed, onToggleCollapsed, mobileOpen, onCloseMobile }) {
+export default function AppSidebar({ user, onLogout, section, onSelect, collapsed, onToggleCollapsed, mobileOpen, onCloseMobile }) {
   // `hide` hides labels on desktop when collapsed. The mobile drawer is always expanded.
   const hide = collapsed ? 'lg:hidden' : ''
 
@@ -95,15 +92,27 @@ export default function AppSidebar({ section, onSelect, collapsed, onToggleColla
           <div className={`rounded-xl bg-nav-800 p-3 ${collapsed ? 'lg:bg-transparent lg:p-0' : ''}`}>
             <div className={`flex items-center gap-3 ${collapsed ? 'lg:justify-center' : ''}`}>
               <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent-600 text-sm font-semibold text-white" aria-hidden="true">
-                {USER.name[0]}
+                {user.name[0].toUpperCase()}
               </span>
               <div className={`min-w-0 ${hide}`}>
-                <p className="text-xs text-ink-300">Workspace</p>
-                <p className="truncate text-sm font-semibold">{USER.name}</p>
-                <p className="text-xs text-ink-500">{USER.note}</p>
+                <p className="text-xs text-ink-300">Signed in as</p>
+                <p className="truncate text-sm font-semibold">{user.name}</p>
+                <p className="truncate text-xs text-ink-500">{user.email}</p>
               </div>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={onLogout}
+            title={collapsed ? 'Log out' : undefined}
+            className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-bad hover:bg-nav-800 ${
+              collapsed ? 'lg:justify-center lg:px-0' : ''
+            }`}
+          >
+            <LogOut className="size-5 shrink-0" aria-hidden="true" />
+            <span className={hide}>Log out</span>
+          </button>
         </div>
       </aside>
     </>

@@ -1,12 +1,23 @@
+import { clearToken, getToken } from './auth'
+
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
+let unauthorizedHandler = null
+
+/** App registers a function that returns the user to the sign-in page when a token stops working. */
+export function setUnauthorizedHandler(fn) {
+  unauthorizedHandler = fn
+}
+
 async function request(path, options = {}) {
+  // FormData sets its own multipart Content-Type, so it must not be overridden.
+  const headers = options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }
+  const token = getToken()
+  if (token) headers.Authorization = `Bearer ${token}`
+
   let res
   try {
-    res = await fetch(`${BASE}${path}`, {
-      headers: { 'Content-Type': 'application/json' },
-      ...options,
-    })
+    res = await fetch(`${BASE}${path}`, { ...options, headers })
   } catch {
     throw new Error(`Cannot reach the backend at ${BASE}. Check that it is running.`)
   }
@@ -19,6 +30,11 @@ async function request(path, options = {}) {
     } catch {
       /* response had no JSON body */
     }
+    if (res.status === 401 && token) {
+      clearToken()
+      unauthorizedHandler?.()
+      message = 'Your session has expired. Please sign in again.'
+    }
     throw new Error(message)
   }
   return res.status === 204 ? null : res.json()
@@ -27,6 +43,9 @@ async function request(path, options = {}) {
 const json = (method, data) => ({ method, body: JSON.stringify(data) })
 
 export const api = {
+  register: (data) => request('/api/auth/register', json('POST', data)),
+  login: (data) => request('/api/auth/login', json('POST', data)),
+  me: () => request('/api/auth/me'),
   health: () => request('/api/health'),
   listMeetings: () => request('/api/meetings'),
   getMeeting: (id) => request(`/api/meetings/${id}`),
@@ -41,8 +60,7 @@ export const api = {
   transcribe: (wavBlob) => {
     const form = new FormData()
     form.append('file', wavBlob, 'audio.wav')
-    // No JSON header here: the browser sets the multipart boundary itself.
-    return request('/api/transcribe', { method: 'POST', body: form, headers: {} })
+    return request('/api/transcribe', { method: 'POST', body: form })
   },
   addTask: (meetingId, data) => request(`/api/meetings/${meetingId}/tasks`, json('POST', data)),
   updateTask: (id, data) => request(`/api/tasks/${id}`, json('PATCH', data)),
