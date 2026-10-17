@@ -47,7 +47,8 @@ body {
 
 /* Light page area (white to beach sand). Re-maps the same tokens, so every component adapts.
    Applied to the right-hand wrapper in App.jsx; the sidebar keeps the dark navy theme. */
-.theme-light {
+.theme-light,
+.tokens-light {
   --color-ink-950: #fffdf9;
   --color-ink-900: #ffffff;
   --color-ink-850: #f7f0e3;
@@ -64,6 +65,36 @@ body {
   --color-warn: #94600a;
   --color-bad: #c0392b;
 
-  background-image: linear-gradient(160deg, #ffffff 0%, #fdf9f1 40%, #f5e9d4 100%);
   color: var(--color-ink-100);
+}
+
+/* The light page gradient (the sand background) belongs to .theme-light only. */
+.theme-light {
+  background-image: linear-gradient(160deg, #ffffff 0%, #fdf9f1 40%, #f5e9d4 100%);
+}
+
+/* Dark scope for cards and bands placed inside a light page (the landing page). */
+.theme-dark,
+.tokens-dark {
+  --color-ink-950: #0f1420;
+  --color-ink-900: #151b2a;
+  --color-ink-850: #1a2132;
+  --color-ink-800: #20293c;
+  --color-ink-700: #2d384e;
+  --color-ink-500: #838c9c;
+  --color-ink-300: #a7aebb;
+  --color-ink-100: #e9ecf1;
+
+  --color-accent-300: #8fb2ff;
+  --color-accent-400: #6b96f5;
+
+  --color-ok: #5cc48e;
+  --color-warn: #e6b455;
+  --color-bad: #ee7b7b;
+
+  color: var(--color-ink-100);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
 }

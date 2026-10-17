@@ -10,6 +10,7 @@ import MeetingsPage from './pages/MeetingsPage'
 import TasksPage from './pages/TasksPage'
 import ChatPage from './pages/ChatPage'
 import AuthPage from './pages/AuthPage'
+import HomePage from './pages/HomePage'
 
 function initialSection() {
   const hash = window.location.hash.slice(1)
@@ -287,10 +288,14 @@ function Workspace({ user, onLogout }) {
 
 export default function App() {
   const [user, setUser] = useState(null)
+  const [view, setView] = useState('home') // home, login or register: only used while signed out
   const [checking, setChecking] = useState(() => Boolean(getToken()))
 
   useEffect(() => {
-    setUnauthorizedHandler(() => setUser(null))
+    setUnauthorizedHandler(() => {
+      setUser(null)
+      setView('login')
+    })
     if (!getToken()) return
     api
       .me()
@@ -306,7 +311,12 @@ export default function App() {
       </div>
     )
   }
-  if (!user) return <AuthPage onAuthed={setUser} />
+  if (!user) {
+    if (view === 'home') {
+      return <HomePage onSignIn={() => setView('login')} onGetStarted={() => setView('register')} />
+    }
+    return <AuthPage key={view} initialMode={view} onBack={() => setView('home')} onAuthed={setUser} />
+  }
 
   return (
     <Workspace
@@ -315,6 +325,7 @@ export default function App() {
       onLogout={() => {
         clearToken()
         setUser(null)
+        setView('home')
       }}
     />
   )

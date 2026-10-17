@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { api } from '../api'
 import { setToken } from '../auth'
 
@@ -9,8 +9,8 @@ const POINTS = [
   'Runs on local AI, so your meetings stay on your computer',
 ]
 
-export default function AuthPage({ onAuthed }) {
-  const [mode, setMode] = useState('login')
+export default function AuthPage({ onAuthed, onBack, initialMode = 'login' }) {
+  const [mode, setMode] = useState(initialMode)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -63,7 +63,15 @@ export default function AuthPage({ onAuthed }) {
 
       <main className="theme-light flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <p className="mb-6 text-lg font-semibold tracking-tight lg:hidden">DevMeetScribe</p>
+          <button
+            type="button"
+            onClick={onBack}
+            className="mb-6 inline-flex items-center gap-1.5 text-sm text-ink-300 hover:text-ink-100"
+          >
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            Back to home
+          </button>
+          <p className="mb-4 text-lg font-semibold tracking-tight lg:hidden">DevMeetScribe</p>
 
           <form onSubmit={submit} className="flex flex-col gap-4 rounded-2xl border border-ink-800 bg-ink-900 p-6 shadow-sm sm:p-8">
             <div>
